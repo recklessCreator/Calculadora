@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora RTC - Interface</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .form-input {
+            width: 100%;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        /* Custom Scrollbar for code blocks */
+        pre::-webkit-scrollbar { height: 8px; width: 8px; }
+        pre::-webkit-scrollbar-track { background: #1f2937; }
+        pre::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        pre::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Calculadora RTC (Reforma Tributária)</h1>
+                    <p class="text-blue-200 text-sm mt-1">Interface Web para a API Local do Regime Regular (localhost:8080)</p>
+                </div>
+                <div class="hidden md:block">
+                    <svg class="w-10 h-10 text-blue-300 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Formulário Section (Left & Center columns) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <form id="nfeForm" class="space-y-6">
+                    <!-- Dados da Operação Card -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h2 class="text-lg font-semibold text-gray-700">Dados da Operação</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Origem -->
+                                <div class="space-y-4">
+                                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider border-b pb-2">Origem</h3>
+                                    <div>
+                                        <label class="form-label" for="ufOrigem">UF de Origem</label>
+                                        <select id="ufOrigem" name="ufOrigem" class="form-input bg-white" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="SP">São Paulo (SP)</option>
+                                            <option value="RJ">Rio de Janeiro (RJ)</option>
+                                            <option value="MG">Minas Gerais (MG)</option>
+                                            <option value="DF">Distrito Federal (DF)</option>
+                                            <option value="BA">Bahia (BA)</option>
+                                            <!-- Outros estados omitidos para brevidade, mas podem ser adicionados -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" for="munOrigem">Município de Origem (IBGE)</label>
+                                        <input type="text" id="munOrigem" name="munOrigem" class="form-input" placeholder="Ex: 3550308" required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Destino -->
+                                <div class="space-y-4">
+                                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider border-b pb-2">Destino</h3>
+                                    <div>
+                                        <label class="form-label" for="ufDestino">UF de Destino</label>
+                                        <select id="ufDestino" name="ufDestino" class="form-input bg-white" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="SP">São Paulo (SP)</option>
+                                            <option value="RJ">Rio de Janeiro (RJ)</option>
+                                            <option value="MG">Minas Gerais (MG)</option>
+                                            <option value="DF">Distrito Federal (DF)</option>
+                                            <option value="BA">Bahia (BA)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label" for="munDestino">Município de Destino (IBGE)</label>
+                                        <input type="text" id="munDestino" name="munDestino" class="form-input" placeholder="Ex: 3304557" required>
+                                    </div>
+                                </div>
+
+                                <!-- Classificação -->
+                                <div class="md:col-span-2 space-y-4 pt-2">
+                                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider border-b pb-2">Classificação</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="form-label" for="naturezaOp">Natureza da Operação</label>
+                                            <select id="naturezaOp" name="naturezaOp" class="form-input bg-white" required>
+                                                <option value="VENDA">Venda</option>
+                                                <option value="TRANSFERENCIA">Transferência</option>
+                                                <option value="DEVOLUCAO">Devolução</option>
+                                                <option value="REMESSA">Remessa</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" for="destinacao">Destinação</label>
+                                            <select id="destinacao" name="destinacao" class="form-input bg-white" required>
+                                                <option value="CONSUMO_FINAL">Consumo Final</option>
+                                                <option value="COMERCIALIZACAO">Comercialização / Revenda</option>
+                                                <option value="INDUSTRIALIZACAO">Industrialização</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itens da NF-e Card -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                <h2 class="text-lg font-semibold text-gray-700">Itens da NF-e</h2>
+                            </div>
+                            <button type="button" id="btnAddItem" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                Adicionar Item
+                            </button>
+                        </div>
+                        <div class="p-6 overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NCM</th>
+                                        <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">Descrição</th>
+                                        <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd</th>
+                                        <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vlr. Unit (R$)</th>
+                                        <th scope="col" class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vlr. Total</th>
+                                        <th scope="col" class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsContainer" class="bg-white divide-y divide-gray-200">
+                                    <!-- Itens injetados via JS -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-gray-50">
+                                        <td colspan="4" class="px-3 py-4 text-sm font-semibold text-right text-gray-700">Total da Nota:</td>
+                                        <td class="px-3 py-4 text-sm font-bold text-gray-900" id="totalGeralNfe">R$ 0,00</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Ação -->
+                    <div class="pt-4">
+                        <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Calcular Tributos (API Local)
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Painel de Resultados (Right column) -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- JSON Payload Card -->
+                <div class="bg-gray-900 shadow rounded-lg overflow-hidden border border-gray-700">
+                    <div class="px-4 py-3 border-b border-gray-700 bg-gray-800 flex justify-between items-center">
+                        <h2 class="text-sm font-semibold text-gray-200">Payload JSON (Request)</h2>
+                        <button id="btnCopyJson" class="text-gray-400 hover:text-white transition-colors" title="Copiar JSON">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="p-0">
+                        <pre id="jsonPreview" class="text-xs text-green-400 p-4 font-mono overflow-x-auto m-0 whitespace-pre-wrap word-break">Aguardando dados...</pre>
+                    </div>
+                </div>
+
+                <!-- Resposta da API Card -->
+                <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200" id="apiResponseCard">
+                    <div class="px-4 py-3 border-b border-gray-200 bg-blue-50 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h2 class="text-sm font-semibold text-blue-900">Resultado da API</h2>
+                    </div>
+                    <div class="p-4 bg-gray-50 text-sm text-gray-700 min-h-[150px]" id="apiResultContainer">
+                        <p class="text-gray-500 italic flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            O resultado do cálculo aparecerá aqui após enviar a requisição.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm text-gray-500">
+            Interface Web de Teste para o projeto <a href="https://github.com/ReceitaFederal/calculadora-rtc-regime-regular" target="_blank" class="text-blue-600 hover:underline">ReceitaFederal/calculadora-rtc-regime-regular</a>.<br>
+            Os dados são processados inteiramente localmente (via porta 8080).
+        </div>
+    </footer>
+
+    <!-- Templates -->
+    <template id="itemRowTemplate">
+        <tr class="item-row hover:bg-gray-50 transition-colors">
+            <td class="px-2 py-2">
+                <input type="text" class="form-input item-ncm" placeholder="NCM" required pattern="[0-9]{8}" title="NCM deve conter 8 dígitos">
+            </td>
+            <td class="px-2 py-2">
+                <input type="text" class="form-input item-desc" placeholder="Descrição do produto" required>
+            </td>
+            <td class="px-2 py-2">
+                <input type="number" class="form-input item-qty" placeholder="0" min="0.01" step="0.01" required value="1">
+            </td>
+            <td class="px-2 py-2">
+                <input type="number" class="form-input item-price" placeholder="0.00" min="0.01" step="0.01" required>
+            </td>
+            <td class="px-2 py-2">
+                <input type="text" class="form-input item-total bg-gray-100 font-semibold cursor-not-allowed" readonly value="R$ 0,00" tabindex="-1">
+                <input type="hidden" class="item-total-raw" value="0">
+            </td>
+            <td class="px-2 py-2 text-center">
+                <button type="button" class="btn-remove-item text-red-500 hover:text-red-700 focus:outline-none p-1 rounded hover:bg-red-50 transition-colors" title="Remover Item">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </td>
+        </tr>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemsContainer = document.getElementById('itemsContainer');
+            const btnAddItem = document.getElementById('btnAddItem');
+            const itemRowTemplate = document.getElementById('itemRowTemplate');
+            const nfeForm = document.getElementById('nfeForm');
+            const totalGeralNfe = document.getElementById('totalGeralNfe');
+            const jsonPreview = document.getElementById('jsonPreview');
+            const apiResultContainer = document.getElementById('apiResultContainer');
+            const btnCopyJson = document.getElementById('btnCopyJson');
+
+            // Formatador de Moeda
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+            };
+
+            // Atualiza os totais da linha e geral
+            const updateTotals = () => {
+                let generalTotal = 0;
+                const rows = itemsContainer.querySelectorAll('.item-row');
+                
+                rows.forEach(row => {
+                    const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const total = qty * price;
+                    
+                    row.querySelector('.item-total').value = formatCurrency(total);
+                    row.querySelector('.item-total-raw').value = total.toFixed(2);
+                    generalTotal += total;
+                });
+
+                totalGeralNfe.textContent = formatCurrency(generalTotal);
+                generatePreviewJSON(); // Atualiza o JSON em tempo real ao mudar valores
+            };
+
+            // Adicionar nova linha
+            const addItemRow = () => {
+                const clone = itemRowTemplate.content.cloneNode(true);
+                
+                // Eventos de cálculo
+                clone.querySelector('.item-qty').addEventListener('input', updateTotals);
+                clone.querySelector('.item-price').addEventListener('input', updateTotals);
+                clone.querySelector('.item-ncm').addEventListener('input', generatePreviewJSON);
+                clone.querySelector('.item-desc').addEventListener('input', generatePreviewJSON);
+                
+                // Evento de remover
+                const btnRemove = clone.querySelector('.btn-remove-item');
+                btnRemove.addEventListener('click', (e) => {
+                    e.target.closest('.item-row').remove();
+                    updateTotals();
+                });
+
+                itemsContainer.appendChild(clone);
+            };
+
+            // Inicializa com 1 linha vazia
+            addItemRow();
+
+            // Adiciona ouvintes para atualizar JSON em tempo real em campos do form principal
+            const formInputs = document.querySelectorAll('#nfeForm select, #nfeForm input:not(.item-qty):not(.item-price):not(.item-ncm):not(.item-desc)');
+            formInputs.forEach(input => {
+                input.addEventListener('change', generatePreviewJSON);
+                input.addEventListener('keyup', generatePreviewJSON);
+            });
+
+            btnAddItem.addEventListener('click', () => {
+                addItemRow();
+                generatePreviewJSON();
+            });
+
+            // Montar o Payload JSON (Estrutura hipotética baseada nos dados)
+            function getFormData() {
+                const data = {
+                    dadosOperacao: {
+                        ufOrigem: document.getElementById('ufOrigem').value,
+                        municipioOrigem: document.getElementById('munOrigem').value,
+                        ufDestino: document.getElementById('ufDestino').value,
+                        municipioDestino: document.getElementById('munDestino').value,
+                        naturezaOperacao: document.getElementById('naturezaOp').value,
+                        destinacao: document.getElementById('destinacao').value
+                    },
+                    itens: []
+                };
+
+                const rows = itemsContainer.querySelectorAll('.item-row');
+                rows.forEach((row, index) => {
+                    const ncm = row.querySelector('.item-ncm').value;
+                    const desc = row.querySelector('.item-desc').value;
+                    const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const total = parseFloat(row.querySelector('.item-total-raw').value) || 0;
+
+                    // Só adiciona se tiver o mínimo preenchido para visualização
+                    if (ncm || desc || price > 0) {
+                        data.itens.push({
+                            numeroItem: index + 1,
+                            codigoNcm: ncm,
+                            descricao: desc,
+                            quantidade: qty,
+                            valorUnitario: price,
+                            valorTotal: total
+                        });
+                    }
+                });
+
+                return data;
+            }
+
+            function generatePreviewJSON() {
+                const data = getFormData();
+                jsonPreview.textContent = JSON.stringify(data, null, 2);
+            }
+
+            // Copiar JSON
+            btnCopyJson.addEventListener('click', () => {
+                const text = jsonPreview.textContent;
+                if (text && text !== 'Aguardando dados...') {
+                    try {
+                        document.execCommand('copy'); // Fallback para iframe support
+                        navigator.clipboard.writeText(text).catch(err => {
+                            // execCommand will have worked if this fails due to secure context
+                            const textArea = document.createElement("textarea");
+                            textArea.value = text;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(textArea);
+                        });
+                        
+                        btnCopyJson.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                        setTimeout(() => {
+                            btnCopyJson.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                        }, 2000);
+                    } catch (err) {}
+                }
+            });
+
+            // Submissão do Formulário
+            nfeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const payload = getFormData();
+                
+                if (payload.itens.length === 0) {
+                    apiResultContainer.innerHTML = `<div class="p-3 bg-red-50 text-red-700 rounded border border-red-200">Erro: Adicione pelo menos um item à NF-e.</div>`;
+                    return;
+                }
+
+                apiResultContainer.innerHTML = `
+                    <div class="flex items-center justify-center py-6 text-blue-600">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processando requisição para localhost:8080...
+                    </div>
+                `;
+
+                try {
+                    // Endpoint baseado na documentação padrão da API de Regime Geral da Calculadora RTC
+                    const API_URL = 'http://localhost:8080/api/regime-geral';
+                    
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    // Exibição do Sucesso (formatando a saída real da API caso funcionasse)
+                    apiResultContainer.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="p-3 bg-green-50 border border-green-200 rounded text-green-800 font-semibold flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Cálculo realizado com sucesso!
+                            </div>
+                            <div class="bg-gray-900 rounded p-4 overflow-auto max-h-[300px]">
+                                <pre class="text-green-400 font-mono text-xs m-0">${JSON.stringify(result, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+
+                } catch (error) {
+                    // Tratamento de Erro (Especialmente importante porque o CORS/Network falhará sem a API rodando)
+                    console.error("Erro na requisição:", error);
+                    apiResultContainer.innerHTML = `
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-red-800">Falha ao conectar com a API Local</h3>
+                                    <div class="mt-2 text-sm text-red-700">
+                                        <p>Não foi possível alcançar <strong>http://localhost:8080/api/regime-geral</strong>.</p>
+                                        <p class="mt-2 font-semibold">Instruções para solução:</p>
+                                        <ul class="list-disc pl-5 mt-1 space-y-1">
+                                            <li>Verifique se o projeto Java da <em>Receita Federal</em> está rodando em sua máquina na porta 8080.</li>
+                                            <li>Certifique-se de que a API possui configuração de CORS (Cross-Origin Resource Sharing) habilitada para aceitar requisições do navegador.</li>
+                                            <li>Erro técnico capturado: <code>${error.message}</code></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            // Trigger inicial para popular JSON
+            generatePreviewJSON();
+        });
+    </script>
+</body>
+</html>
